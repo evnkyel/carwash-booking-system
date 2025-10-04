@@ -11,6 +11,6 @@
     if ($conn) {
         echo "Database connected successfully!";
     } else {
-        die("Connection failed");
+        echo "Connection failed";
     }
 ?>
