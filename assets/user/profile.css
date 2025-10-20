@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #B2EBF2, #c4f0ff);
+    height: 100vh;
+}
+
+.profile-sect {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.profile-card {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 40px 80px;
+    margin: 0 auto;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    text-align: center;
+    max-width: 490px;
+    margin-top: 10px;
+}
+
+.profile-card .btn-container {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+
+.prof-icon {
+    margin-bottom: 10px;
+    color: #4d4d4d;
+}
+
+h2 {
+    color: #4d4d4d;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.info {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.info p {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #4d4d4d;
+}
+
+.info span {
+    font-weight: bold;
+    color: #4d4d4d;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.btn {
+    background: #00bcd4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #0097a7;
+}
+
+.btn-secondary {
+    background: #4caf50;
+}
+
+.btn-secondary:hover {
+    background: #43a047;
+}

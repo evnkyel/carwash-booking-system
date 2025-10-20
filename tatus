@@ -1,0 +1,213 @@
+[33mcommit 169e806bb75bd844773d6ea025e25d86b2bf5676[m
+Merge: cc67758 f120f4b
+Author: evnkyel <eivancastro0801@gmail.com>
+Date:   Mon Oct 20 10:36:41 2025 +0800
+
+    WIP on main: cc67758 Improve Landing Page
+
+[1mdiff --cc admin/index.php[m
+[1mindex 3592889,3592889..ad0a5f5[m
+[1m--- a/admin/index.php[m
+[1m+++ b/admin/index.php[m
+[36m@@@ -1,111 -1,111 +1,456 @@@[m
+  <?php[m
+  session_start();[m
+  include '../config/config.php';[m
+[32m++include '../classes/Booking.php';[m
+[32m++[m
+[32m++$booking = new Booking($conn);[m
+  [m
+  if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {[m
+      header("Location: ../login.php");[m
+      exit();[m
+  }[m
+  [m
+[31m--if (isset($_GET['action']) && isset($_GET['id'])) {[m
+[31m--    $booking_id = intval($_GET['id']);[m
+[31m--    $action = $_GET['action'];[m
+[32m++// Handle POST actions[m
+[32m++if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id'])) {[m
+[32m++    $booking_id = intval($_POST['id']);[m
+[32m++    $action = $_POST['action'];[m
+  [m
+[31m--    if ($action === 'confirm') {[m
+[31m--        $stmt = $conn->prepare("UPDATE bookings SET status = 'Confirmed' WHERE booking_id = ?");[m
+[32m++    if ($action === 'delete') {[m
+[32m++        if ($booking->deleteBooking($booking_id)) {[m
+[32m++            $_SESSION['success_message'] = "Booking deleted successfully!";[m
+[32m++        }[m
+[32m++    } elseif ($action === 'confirm') {[m
+[32m++        $booking->updateStatus($booking_id, 'Confirmed');[m
+[32m++        $_SESSION['success_message'] = "Booking confirmed successfully!";[m
+      } elseif ($action === 'cancel') {[m
+[31m--        $stmt = $conn->prepare("UPDATE bookings SET status = 'Cancelled' WHERE booking_id = ?");[m
+[31m--    } elseif ($action === 'delete') {[m
+[31m--        $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");[m
+[32m++        $booking->updateStatus($booking_id, 'Cancelled');[m
+[32m++        $_SESSION['success_message'] = "Booking cancelled successfully!";[m
+[32m++    } elseif ($action === 'complete') {[m
+[32m++        $booking->updateStatus($booking_id, 'Completed');[m
+[32m++        $_SESSION['success_message'] = "Booking completed successfully!";[m
+      }[m
+  [m
+[31m--    if (isset($stmt)) {[m
+[31m--        $stmt->bind_param("i", $booking_id);[m
+[31m--        $stmt->execute();[m
+[31m--        $stmt->close();[m
+[31m--        header("Location: index.php");[m
+[31m--        exit();[m
+[32m++    header("Location: index.php");[m
+[32m++    exit();[m
+[32m++}[m
+[32m++[m
+[32m++$q = isset($_GET['q']) ? trim($_GET['q']) : '';[m
+[32m++$status = isset($_GET['status']) ? $_GET['status'] : 'all';[m
+[32m++$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;[m
+[32m++$perPage = 8;[m
+[32m++$offset = ($page - 1) * $perPage;[m
+[32m++[m
+[32m++$search = $conn->real_escape_string($q);[m
+[32m++$where = [];[m
+[32m++[m
+[32m++if ($search !== '') {[m
+[32m++    if (is_numeric($search)) {[m
+[32m++        $where[] = "(u.name LIKE '%$search%' OR u.email LIKE '%$search%' OR b.booking_id = " . intval($search) . " )";[m
+[32m++    } else {[m
+[32m++        $where[] = "(u.name LIKE '%$search%' OR u.email LIKE '%$search%' OR b.service_type LIKE '%$search%')";[m
+      }[m
+  }[m
+[32m++if ($status !== 'all') {[m
+[32m++    $where[] = "b.status = '" . $conn->real_escape_string($status) . "'";[m
+[32m++}[m
+  [m
+[31m--$sql = "SELECT [m
+[31m--            b.booking_id, [m
+[31m--            b.service_type, [m
+[31m--            b.appointment_date, [m
+[31m--            b.appointment_time, [m
+[31m--            b.status, [m
+[31m--            u.name, [m
+[31m--            u.email[m
+[31m--        FROM bookings AS b[m
+[31m--        JOIN users AS u ON b.user_id = u.user_id[m
+[31m--        ORDER BY b.booking_id DESC";[m
+[32m++$whereSQL = $where ? "WHERE " . implode(" AND ", $where) : "";[m
+  [m
+[32m++$countRes = $conn->query("SELECT COUNT(*) AS total FROM bookings b JOIN users u ON b.user_id=u.user_id $whereSQL");[m
+[32m++$totalRows = $countRes->fetch_assoc()['total'];[m
+[32m++$totalPages = max(1, ceil($totalRows / $perPage));[m
+[32m++[m
+[32m++$sql = "SELECT b.booking_id,b.service_type,b.appointment_date,b.appointment_time,b.status,u.name,u.email[m
+[32m++        FROM bookings b JOIN users u ON b.user_id=u.user_id[m
+[32m++        $whereSQL[m
+[32m++        ORDER BY b.booking_id DESC[m
+[32m++        LIMIT $perPage OFFSET $offset";[m
+  $result = $conn->query($sql);[m
+  ?>[m
+[31m--[m
+  <!DOCTYPE html>[m
+  <html lang="en">[m
+  [m
+  <head>[m
+      <meta charset="UTF-8">[m
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">[m
+[31m--    <title>Admin Dashboard</title>[m
+[32m++    <title>Admin - Manage Bookings</title>[m
+      <link rel="stylesheet" href="../assets/toastify.css">[m
+[31m--    <link rel="stylesheet" href="../assets/admin.css">[m
+[32m++    <link rel="stylesheet" href="../assets/css/all.min.css">[m
+[32m++    <style>[m
+[32m++        body {[m
+[32m++            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;[m
+[32m++            background: linear-gradient(to bottom, #B2EBF2, #E0F7FA);[m
+[32m++            min-height: 100vh;[m
+[32m++            margin: 0;[m
+[32m++            display: flex;[m
+[32m++        }[m
+[32m++[m
+[32m++        a {[m
+[32m++            text-decoration: none;[m
+[32m++        }[m
+[32m++[m
+[32m++        .sidebar {[m
+[32m++            width: 180px;[m
+[32m++            background: #4A90E2;[m
+[32m++            color: white;[m
+[32m++            padding: 20px 10px;[m
+[32m++            display: flex;[m
+[32m++            flex-direction: column;[m
+[32m++            justify-content: space-between;[m
+[32m++        }[m
+[32m++[m
+[32m++        .sidebar .menu a {[m
+[32m++            display: flex;[m
+[32m++            align-items: center;[m
+[32m++            gap: 10px;[m
+[32m++            color: white;[m
+[32m++            padding: 10px;[m
+[32m++            border-radius: 6px;[m
+[32m++            font-size: 14px;[m
+[32m++            margin-bottom: 6px;[m
+[32m++        }[m
+[32m++[m
+[32m++        .sidebar .menu a.active {[m
+[32m++            background: white;[m
+[32m++            color: #4A90E2;[m
+[32m++            font-weight: 600;[m
+[32m++        }[m
+[32m++[m
+[32m++        .sidebar .logout {[m
+[32m++            padding: 10px;[m
+[32m++            background: #d64545;[m
+[32m++            text-align: center;[m
+[32m++            border-radius: 6px;[m
+[32m++            color: white;[m
+[32m++            font-weight: 600;[m
+[32m++            margin-top: 10px;[m
+[32m++        }[m
+[32m++[m
+[32m++        .main {[m
+[32m++            flex: 1;[m
+[32m++            padding: 30px;[m
+[32m++        }[m
+[32m++[m
+[32m++        .bookings-container {[m
+[32m++            min-width: 950px;[m
+[32m++            margin: 0 auto;[m
+[32m++            background: rgba(255, 255, 255, 0.6);[m
+[32m++            padding: 30px 40px;[m
+[32m++            border-radius: 12px;[m
+[32m++            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);[m
+[32m++        }[m
+[32m++[m
+[32m++        h2 {[m
+[32m++            text-align: center;[m
+[32m++            color: #4d4d4d;[m
+[32m++            margin-bottom: 25px;[m
+[32m++        }[m
+[32m++[m
+[32m++        table {[m
+[32m++            width: 100%;[m
+[32m++            border-collapse: collapse;[m
+[32m++            margin-bottom: 20px;[m
+[32m++        }[m
+[32m++[m
+[32m++        th,[m
+[32m++        td {[m
+[32m++            cursor: default;[m
+[32m++            text-align: center;[m
+[32m++            padding: 12px;[m
+[32m++            border-bottom: 1px solid #ddd;[m
+[32m++            vertical-align: middle;[m
+[32m++        }[m
+[32m++[m
+[32m++        th {[m
+[32m++            background: #4A90E2;[m
+[32m++            color: white;[m
+[32m++        }[m
+[32m++[m
+[32m++        tr:hover {[m
+[32m++            background: #c4f0ff86;[m
+[32m++        }[m
+[32m++[m
+[32m++        .

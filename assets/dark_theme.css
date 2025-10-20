@@ -1,0 +1,315 @@
+body {
+    background: linear-gradient(180deg, #1e272e, #273964);
+    color: #f1f1f1;
+    transition: background 0.3s, color 0.3s;
+}
+
+.header {
+    background: #1e272e;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+.header .logo {
+    color: white;
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.4);
+}
+
+.nav-links .nav-link {
+    color: white;
+    transition: color 0.3s;
+}
+
+.nav-links .nav-link:hover {
+    color: #4A90E2;
+}
+
+.profile-icon i {
+    color: #f1f1f1;
+}
+
+.profile-menu {
+    background: #1a2228;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+}
+
+.profile-list li a {
+    color: rgba(255, 255, 255, 0.518);
+}
+
+.profile-list li:hover {
+    background: rgba(0, 188, 212, 0.15);
+    color: #00bcd4;
+}
+
+.profile-list a:hover {
+    color: white;
+}
+
+.profile-list a.active {
+    color: #fff;
+    background: rgba(0, 188, 212, 0.15);
+    margin: -20px -40px -20px -40px;
+    padding: 20px 0px 20px 40px;
+}
+
+.settings-container {
+    background: rgba(38, 50, 56, 0.563);
+    color: #e0e0e0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    border-radius: 12px;
+}
+
+.settings-container h2 {
+    color: white;
+}
+
+.theme-toggle {
+    color: #e0e0e0;
+}
+
+.btn {
+    background: #00acc1;
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background: #0097a7;
+    transform: translateY(-2px);
+    box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+}
+
+.password-btn {
+    background: #43a047;
+}
+
+.password-btn:hover {
+    background: #2e7d32;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.4);
+}
+
+
+/* profile.php */
+.profile-card {
+    background: rgba(38, 50, 56, 0.95);
+    color: #e0e0e0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    border-radius: 12px;
+}
+
+.prof-icon {
+    color: white;
+}
+
+h2 {
+    color: white;
+}
+
+.info span {
+    color: white;
+}
+
+.info p {
+    color: white;
+}
+
+/* index.php */
+.hero-section {
+    position: relative;
+    background-image: url(../assets/images/BGnighttime.png);
+    z-index: 0;
+}
+
+.hero-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: -1;
+}
+
+.hero-title {
+    color: white;
+    text-shadow: 3px 3px 8px rgba(255, 255, 255, 0.263);
+}
+
+.hero-description {
+    color: white;
+    text-shadow: 1px 1px 2px rgb(0, 0, 0);
+}
+
+.features {
+    background: linear-gradient(rgb(39, 57, 100), rgba(224, 247, 250, 0.212));
+}
+
+.feature-card {
+    background: rgba(38, 50, 56, 0.95);
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.feature-title,
+.feature-subtitle {
+    color: white;
+}
+
+.services-section {
+    background: linear-gradient(rgba(224, 247, 250, 0.212), rgb(39, 57, 100));
+}
+
+.service-title {
+    color: white;
+}
+
+.service-card {
+    background: rgba(38, 50, 56, 0.525);
+    box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+    color: white;
+    border: none;
+}
+
+.service-card:hover {
+    background: rgb(38, 50, 56);
+}
+
+.service-name {
+    color: #4A90E2;
+}
+
+.service-price,
+.serv-list,
+.best {
+    color: white;
+}
+
+.about-section {
+    background: linear-gradient(rgb(39, 57, 100), rgba(224, 247, 250, 0.212));
+}
+
+.about-title {
+    color: white;
+}
+
+.about-container {
+    background: rgba(38, 50, 56, 0.516);
+    color: white;
+}
+
+.member {
+    background: rgba(38, 50, 56, 0.95);
+}
+
+.member h4,
+.member p {
+    color: white;
+}
+
+/*booking.php*/
+.booking-section {
+    background: linear-gradient(180deg, #1e272e, #273964);
+}
+
+.booking-container {
+    background: rgba(38, 50, 56, 0.95);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+.book-btn {
+    background: #386ca9;
+}
+
+.book-btn:hover {
+    background: #386ca9;
+}
+
+.form-group.short label {
+    color: white;
+}
+
+.form-group .serv-cho {
+    color: white;
+}
+
+.service-price2 {
+    color: #4d4d4d;
+}
+
+/*my_bookings.php*/
+.bookings-container {
+    background: rgba(38, 50, 56, 0.95);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+th {
+    background: #386ca9;
+}
+
+tr:hover {
+    background: #4b4b4bb9;
+}
+
+.back-btn {
+    background: #386ca9;
+}
+
+.back-btn:hover {
+    background: #284e7a;
+}
+
+.cancel-btn {
+    background: #c6362b;
+}
+
+.cancel-btn:hover {
+    background: rgb(161, 36, 36);
+}
+
+.status.Pending {
+    background-color: #cc8f00;
+}
+
+.status.Confirmed {
+    background-color: #39853c;
+}
+
+.status.Completed {
+    background-color: #1a73bc;
+}
+
+.status.Cancelled {
+    background-color: #c6362b;
+}
+
+footer {
+    background: linear-gradient(rgba(224, 247, 250, 0.212), rgb(39, 57, 100));
+    color: white;
+}
+
+/* Input Fields */
+input,
+select,
+textarea {
+    background-color: #37474f;
+    color: white;
+    border: 1px solid #546e7a;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #b0bec5;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e272e;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #00bcd4;
+    border-radius: 4px;
+}
