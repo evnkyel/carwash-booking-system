@@ -1,40 +1,72 @@
+<?php
+session_start();
+
+if (isset($_SESSION['error_message'])) {
+    echo "
+    <script>
+    window.addEventListener('DOMContentLoaded', () => {
+        Toastify({
+            text: '" . addslashes($_SESSION['error_message']) . "',
+            duration: 3000,
+            gravity: 'top',
+            position: 'center',
+            close: true,
+            style: {
+                background: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+                borderRadius: '10px',
+                color: '#fff',
+                textAlign: 'center'
+            }
+        }).showToast();
+    });
+    </script>
+    ";
+    unset($_SESSION['error_message']);
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Wash Booking System</title>
+    <title>Sign in</title>
     <link rel="stylesheet" href="assets/style.css">
-    <script src="https://kit.fontawesome.com/297c9c66b4.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="assets/css/all.min.css">
+    <link rel='stylesheet' href='assets/toastify.css'>
 </head>
-<body>
-    <div class="menu-overlay"></div>
 
-    <nav class="side-menu">
-        <ul class="menu-list">
-            <li><a href="index.php"><i class="fas fa-home nav-icon"></i> Home</a></li>
-            <li><a href="#services"><i class="fas fa-car nav-icon"></i> Services</a></li>
-            <li><a href="#booking"><i class="fas fa-calendar-plus nav-icon"></i> Book Now</a></li>
-            <li><a href="#my-bookings"><i class="fas fa-calendar-check nav-icon"></i> My Bookings</a></li>
-            <li><a href="#about-us"><i class="fas fa-info-circle nav-icon"></i> About Us</a></li>
-            <li><a href="#contact"><i class="fas fa-phone nav-icon"></i> Contact</a></li>
-            <li><a href="login.php"><i class="fas fa-user nav-icon"></i> Profile</a></li>
+<body>
+    <div class="profile-menu-overlay"></div>
+
+    <nav class="profile-menu">
+        <ul class="profile-list">
+            <li><a href="profile.php"><i class="fas fa-user-circle nav-icon"></i> My Profile</a></li>
+            <li><a href="settings.php"><i class="fas fa-cog nav-icon"></i> Settings</a></li>
+            <li><a href="login.php"><i class="fas fa-sign-out-alt nav-icon"></i> Log In</a></li>
         </ul>
     </nav>
 
     <header class="header">
-        <div class="menu-icon" id="menuIcon">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-        <div class="logo">Sign in</div>
-        <div class="notification"><i class="fa-solid fa-bell"></i></div>
+        <div class="logo">Car Wash</div>
+        <ul class="nav-links">
+            <li><a href="index.php#home" class="nav-link">Home</a></li>
+            <li><a href="index.php#services" class="nav-link">Services</a></li>
+            <li><a href="booking.php" class="nav-link">Book Now</a></li>
+            <li><a href="index.php#about" class="nav-link">About Us</a></li>
+            <li>
+                <div class="profile-icon" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0">
+                    <i class="fas fa-user-circle nav-icon fa-2x" aria-hidden="true"></i>
+                </div>
+            </li>
+        </ul>
     </header>
 
     <section class="login-section">
         <div class="login-container">
-            <h2>Sign In</h2>
+            <h2 class="login-title">Sign In</h2>
             <form action="login_process.php" method="POST">
                 <div class="form-group">
                     <label for="email">Email</label>
@@ -57,7 +89,8 @@
             </div>
         </div>
     </section>
-
+    <script src='assets/toastify.js'></script>
     <script src="assets/script.js"></script>
 </body>
+
 </html>

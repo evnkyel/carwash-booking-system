@@ -1,47 +1,67 @@
+<?php
+include 'config/config.php';
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Wash Booking System</title>
     <link rel="stylesheet" href="assets/style.css">
-    <script src="https://kit.fontawesome.com/297c9c66b4.js" crossorigin="anonymous"></script>
-</head>
-<body>
-    <div class="menu-overlay"></div>
+    <link rel="stylesheet" href="assets/css/all.min.css">
+    <link rel="stylesheet" href="assets/about.css">
+    <link id="themeStylesheet" rel="stylesheet" href="">
 
-    <nav class="side-menu">
-        <ul class="menu-list">
-            <li><a href="index.php"><i class="fas fa-home nav-icon"></i> Home</a></li>
-            <li><a href="#services"><i class="fas fa-car nav-icon"></i> Services</a></li>
-            <li><a href="#booking"><i class="fas fa-calendar-plus nav-icon"></i> Book Now</a></li>
-            <li><a href="#my-bookings"><i class="fas fa-calendar-check nav-icon"></i> My Bookings</a></li>
-            <li><a href="#about-us"><i class="fas fa-info-circle nav-icon"></i> About Us</a></li>
-            <li><a href="#contact"><i class="fas fa-phone nav-icon"></i> Contact</a></li>
-            <li><a href="login.php"><i class="fas fa-user nav-icon"></i> Profile</a></li>
+    <style>
+        footer {
+            background: linear-gradient(to bottom, #E0F7FA, #B2EBF2);
+            text-align: center;
+            color: #4d4d4d;
+            font-size: 16px;
+            padding: 20px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="profile-menu-overlay"></div>
+
+    <nav class="profile-menu">
+        <ul class="profile-list">
+            <li><a href="profile.php"><i class="fas fa-user-circle nav-icon"></i> My Profile</a></li>
+            <li><a href="settings.php"><i class="fas fa-cog nav-icon"></i> Settings</a></li>
+            <li><a href="login.php"><i class="fas fa-sign-out-alt nav-icon"></i> Log In</a></li>
         </ul>
     </nav>
 
     <header class="header">
-        <div class="menu-icon" id="menuIcon">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-        <div class="logo">Home</div>
-        <div class="notification"><i class="fa-solid fa-bell"></i></div>
+        <div class="logo">Car Wash</div>
+        <ul class="nav-links">
+            <li><a href="#home" class="nav-link active">Home</a></li>
+            <li><a href="#services" class="nav-link">Services</a></li>
+            <li><a href="booking.php" class="nav-link">Book Now</a></li>
+            <li><a href="#about" class="nav-link">About Us</a></li>
+            <li>
+                <div class="profile-icon" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0">
+                    <i class="fas fa-user-circle nav-icon fa-2x" aria-hidden="true"></i>
+                </div>
+            </li>
+        </ul>
     </header>
 
-    <section class="hero-section">
+    <section class="hero-section" id="home">
         <div class="hero-content">
             <h1 class="hero-title">Book Your Car Wash Today!</h1>
             <p class="hero-description">
-                Welcome to our Online Car Wash & Detailing Service! Book your wash anytime, 
+                Welcome to our Online Car Wash & Detailing Service! Book your wash anytime,
                 anywhere with just a few clicks. Whether it's a quick clean or premium detailing, we make it easy, fast, and hassle-free.
             </p>
-            <a href="#booking"><button class="book-btn">Book Now</button></a>
+            <a href="booking.php"><button class="book-btn">Book Now</button></a>
         </div>
-        <div class="hero-image"></div>
     </section>
 
     <section class="features">
@@ -64,59 +84,102 @@
             <div class="feature-icon">💲</div>
             <div class="feature-title">Affordable</div>
             <div class="feature-subtitle">Pricing</div>
-        </div>   
+        </div>
     </section>
 
-    <section class="services-section">
+    <section class="services-section" id="services">
         <h2 class="service-title">Our Services</h2>
         <div class="service-list">
-            <div class="service-card">
-                <div class="service-icon-container">
-                    <img src="assets/images/serv1.png" alt="Basic Package" class="service-icon">
+            <?php
+            $result = $conn->query("SELECT * FROM services");
+            while ($row = $result->fetch_assoc()) {
+                $descItems = explode("•", $row['description']);
+
+                echo "
+                <div class='service-card'>
+                    <div class='service-icon-container'>
+                        <div class='service-icon'>
+                            <img src='assets/images/{$row['image']}' alt='{$row['service_name']}'>
+                        </div>
+                    </div>
+                    <div class='service-content'>
+                        <h3 class='service-name'>{$row['service_name']}</h3>
+                        <p class='service-price'>₱" . number_format($row['price'], 2) . "</p>
+                        <ul class='service-desc'>";
+                            foreach ($descItems as $item) {
+                                $trimmed = trim($item);
+                                if (!empty($trimmed)) {
+                                    echo "<li>$trimmed</li>";
+                                }
+                            }
+                echo "  </ul>
+                        <span class='best'><b>Best For:</b> {$row['best_for']}</span>
+                    </div>
+                </div>";
+            }
+            ?>
+        </div>
+    </section>
+
+    <section class="about-section" id="about">
+        <h2 class="about-title">About Us</h2>
+        <div class="about-container">
+            <?php
+            $aboutQuery = $conn->query("SELECT * FROM about_info LIMIT 1");
+            $about = $aboutQuery->fetch_assoc();
+            ?>
+
+            <h2><?= htmlspecialchars($about['title']) ?></h2>
+            <p><?= nl2br(htmlspecialchars($about['description'])) ?></p>
+
+            <div class="team-section">
+                <h2 class="our-team">Our Team</h2>
+
+                <?php
+                $result = $conn->query("SELECT * FROM team_members ORDER BY id ASC");
+                $members = [];
+
+                while ($row = $result->fetch_assoc()) {
+                    $members[] = $row;
+                }
+
+                $top_members = array_slice($members, 0, 2);
+                $bottom_members = array_slice($members, 2);
+                ?>
+
+                <div class="top-team">
+                    <?php foreach ($top_members as $member): ?>
+                        <div class="member">
+                            <?php if (!empty($member['photo'])): ?>
+                                <img src="uploads/<?= htmlspecialchars($member['photo']) ?>" alt="<?= htmlspecialchars($member['name']) ?>" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
+                            <?php endif; ?>
+                            <h4><?= htmlspecialchars($member['name']) ?></h4>
+                            <p><?= htmlspecialchars($member['role']) ?></p>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
-                <div class="service-content">
-                    <h3 class="service-name">Basic Package</h3>
-                    <p class="service-description">Includes exterior wash and dry.</p>
-                </div>
-            </div>
-            <div class="service-card">
-                <div class="service-icon-container">
-                    <img src="assets/images/serv2.png" alt="Standard Package" class="service-icon">
-                </div>
-                <div class="service-content">
-                    <h3 class="service-name">Standard Package</h3>
-                    <p class="service-description">Includes exterior wash, tire cleaning, and window cleaning.</p>
-                </div>
-            </div>
-            <div class="service-card">
-                <div class="service-icon-container">
-                    <img src="assets/images/serv3.png" alt="Premium Package" class="service-icon">
-                </div>
-                <div class="service-content">
-                    <h3 class="service-name">Premium Package</h3>
-                    <p class="service-description">Includes all Standard services plus waxing and interior vacuuming.</p>
-                </div>
-            </div>
-            <div class="service-card">
-                <div class="service-icon-container">
-                    <img src="assets/images/serv4.png" alt="Ultimate Package" class="service-icon">
-                </div>
-                <div class="service-content">
-                    <h3 class="service-name">Ultimate Package</h3>
-                    <p class="service-description">Includes all Premium services plus engine cleaning and headlight restoration.</p>
+
+                <div class="bottom-team">
+                    <?php foreach ($bottom_members as $member): ?>
+                        <div class="member">
+                            <?php if (!empty($member['photo'])): ?>
+                                <img src="uploads/<?= htmlspecialchars($member['photo']) ?>" alt="<?= htmlspecialchars($member['name']) ?>" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
+                            <?php endif; ?>
+                            <h4><?= htmlspecialchars($member['name']) ?></h4>
+                            <p><?= htmlspecialchars($member['role']) ?></p>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="view-services">
-        <a href="#services" class="srv-btn">View all services</a>
-    </section>  
-
     <footer>
         <p>&copy; 2025 Car Wash Booking System. All rights reserved.</p>
     </footer>
-
     <script src="assets/script.js"></script>
+    <script src="assets/theme.js"></script>
+    </script>
 </body>
+
 </html>
