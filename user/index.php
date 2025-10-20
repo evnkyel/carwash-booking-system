@@ -1,5 +1,6 @@
 <?php
 session_start();
+include '../config/config.php';
 
 if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
     echo "
@@ -36,6 +37,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
     <link rel="stylesheet" href="../assets/css/all.min.css">
     <link rel='stylesheet' href='../assets/toastify.css'>
     <link rel="stylesheet" href="../assets/about.css">
+    <link id="themeStylesheet" rel="stylesheet" href="">
 
     <style>
         footer {
@@ -113,113 +115,85 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
     <section class="services-section" id="services">
         <h2 class="service-title">Our Services</h2>
         <div class="service-list">
-            <div class="service-card">
-                <div class="service-icon-container">
-                    <div class="service-icon"><img src="../assets/images/serv1.png" alt="Basic Package"></div>
-                </div>
-                <div class="service-content">
-                    <h3 class="service-name">Basic Package</h3>
-                    <p class="service-price">₱250</p>
-                    <ul class="serv-list">
-                        <li>Exterior Wash</li>
-                        <li>Quick Interior Vacuum</li>
-                        <li>Tire Shine</li>
-                    </ul>
-                    <span class="best"><b>Best For:</b> Fast & affordable clean.</span>
-                </div>
-            </div>
-            <div class="service-card">
-                <div class="service-icon-container">
-                    <div class="service-icon"><img src="../assets/images/serv2.png" alt="Standard Package"></div>
-                </div>
-                <div class="service-content">
-                    <h3 class="service-name">Standard Package</h3>
-                    <p class="service-price">₱500</p>
-                    <ul class="serv-list">
-                        <li>Exterior Wash and Wax</li>
-                        <li>Interior Vacuum (seats, carpets, mats)</li>
-                        <li>Dashboard & Windows Cleaning</li>
-                        <li>Tire Shine</li>
-                    </ul>
-                    <span class="best"><b>Best For:</b> Regular maintenance cleaning.</span>
-                </div>
-            </div>
-            <div class="service-card">
-                <div class="service-icon-container">
-                    <div class="service-icon"><img src="../assets/images/serv3.png" alt="Premium Package"></div>
-                </div>
-                <div class="service-content">
-                    <h3 class="service-name">Premium Package</h3>
-                    <p class="service-price">₱1,500</p>
-                    <ul class="serv-list">
-                        <li>Complete Exterior Wash and Wax</li>
-                        <li>Full Interior Deep Cleaning (seats, carpets, dashboard, trunk)</li>
-                        <li>Polishing & Water Spot Removal</li>
-                        <li>Tire & Rim Detailing</li>
-                    </ul>
-                    <span class="best"><b>Best For:</b> Thorough cleaning inside & out.</span>
-                </div>
-            </div>
-            <div class="service-card">
-                <div class="service-icon-container">
-                    <div class="service-icon"><img src="../assets/images/serv4.png" alt="Ultimate Package"></div>
-                </div>
-                <div class="service-content">
-                    <h3 class="service-name">Ultimate Package</h3>
-                    <p class="service-price">₱2,500</p>
-                    <ul class="serv-list">
-                        <li>All services from <b>Premium Detailing</b></li>
-                        <li>Engine Bay Cleaning</li>
-                        <li>Headlight Restoration</li>
-                        <li>Paint Protection (Waxing)</li>
-                        <li>Odor Removal / Anti-Bacterial Mist</li>
-                    </ul>
-                    <span class="best"><b>Best For:</b> Showroom quality / resale prep.</span>
-                </div>
-            </div>
+            <?php
+            $result = $conn->query("SELECT * FROM services");
+            while ($row = $result->fetch_assoc()) {
+                $descItems = explode("•", $row['description']);
+
+                echo "
+                <div class='service-card'>
+                    <div class='service-icon-container'>
+                        <div class='service-icon'>
+                            <img src='../assets/images/{$row['image']}' alt='{$row['service_name']}'>
+                        </div>
+                    </div>
+                    <div class='service-content'>
+                        <h3 class='service-name'>{$row['service_name']}</h3>
+                        <p class='service-price'>₱" . number_format($row['price'], 2) . "</p>
+                        <ul class='service-desc'>";
+                            foreach ($descItems as $item) {
+                                $trimmed = trim($item);
+                                if (!empty($trimmed)) {
+                                    echo "<li>$trimmed</li>";
+                                }
+                            }
+                echo "  </ul>
+                        <span class='best'><b>Best For:</b> {$row['best_for']}</span>
+                    </div>
+                </div>";
+            }
+            ?>
         </div>
     </section>
 
     <section class="about-section" id="about">
         <h2 class="about-title">About Us</h2>
         <div class="about-container">
-            <h2>About Our Car Wash</h2>
-            <p>
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptas omnis mollitia consequuntur recusandae accusantium in
-                maxime perspiciatis quam voluptates laborum quod porro dicta perferendis debitis, quidem ea aliquid enim quibusdam?
-            </p>
-            <p>
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptas omnis mollitia consequuntur recusandae accusantium in
-                maxime perspiciatis quam voluptates laborum quod porro dicta perferendis debitis, quidem ea aliquid enim quibusdam?
-            </p>
+            <?php
+            $aboutQuery = $conn->query("SELECT * FROM about_info LIMIT 1");
+            $about = $aboutQuery->fetch_assoc();
+            ?>
+
+            <h2><?= htmlspecialchars($about['title']) ?></h2>
+            <p><?= nl2br(htmlspecialchars($about['description'])) ?></p>
 
             <div class="team-section">
                 <h2 class="our-team">Our Team</h2>
 
-                <div class="team top-team">
-                    <div class="member">
-                        <h4>Eivan Kyel C. Bauzon</h4>
-                        <p>Project Manager</p>
-                    </div>
-                    <div class="member">
-                        <h4>Paul Vincent F. Balolong</h4>
-                        <p>Programmer</p>
-                    </div>
+                <?php
+                $result = $conn->query("SELECT * FROM team_members ORDER BY id ASC");
+                $members = [];
+
+                while ($row = $result->fetch_assoc()) {
+                    $members[] = $row;
+                }
+
+                $top_members = array_slice($members, 0, 2);
+                $bottom_members = array_slice($members, 2);
+                ?>
+
+                <div class="top-team">
+                    <?php foreach ($top_members as $member): ?>
+                        <div class="member">
+                            <?php if (!empty($member['photo'])): ?>
+                                <img src="uploads/<?= htmlspecialchars($member['photo']) ?>" alt="<?= htmlspecialchars($member['name']) ?>" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
+                            <?php endif; ?>
+                            <h4><?= htmlspecialchars($member['name']) ?></h4>
+                            <p><?= htmlspecialchars($member['role']) ?></p>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
 
-                <div class="team bottom-team">
-                    <div class="member">
-                        <h4>Verlance Jhercey M. Garcia</h4>
-                        <p>Documentation Specialist</p>
-                    </div>
-                    <div class="member">
-                        <h4>Jenmike Kenneth R. Gutierrez</h4>
-                        <p>Database Administrator</p>
-                    </div>
-                    <div class="member">
-                        <h4>Christian Divan B. Lucas</h4>
-                        <p>Systems Analyst</p>
-                    </div>
+                <div class="bottom-team">
+                    <?php foreach ($bottom_members as $member): ?>
+                        <div class="member">
+                            <?php if (!empty($member['photo'])): ?>
+                                <img src="uploads/<?= htmlspecialchars($member['photo']) ?>" alt="<?= htmlspecialchars($member['name']) ?>" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
+                            <?php endif; ?>
+                            <h4><?= htmlspecialchars($member['name']) ?></h4>
+                            <p><?= htmlspecialchars($member['role']) ?></p>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
@@ -230,6 +204,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
     </footer>
     <script src='../assets/toastify.js'></script>
     <script src="../assets/script.js"></script>
+    <script src="../assets/theme.js"></script>
 </body>
 
 </html>

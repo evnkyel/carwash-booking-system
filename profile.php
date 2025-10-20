@@ -68,7 +68,7 @@
 
     <nav class="profile-menu">
         <ul class="profile-list">
-            <li><a href="profile.php"><i class="fas fa-user-circle nav-icon"></i> My Profile</a></li>
+            <li><a href="profile.php" class="active"><i class="fas fa-user-circle nav-icon"></i> My Profile</a></li>
             <li><a href="settings.php"><i class="fas fa-cog nav-icon"></i> Settings</a></li>
             <li><a href="login.php"><i class="fas fa-sign-out-alt nav-icon"></i> Log In</a></li>
         </ul>

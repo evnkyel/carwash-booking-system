@@ -1,44 +1,34 @@
 <?php
 session_start();
-include '../config/config.php';
+include_once '../config/config.php';
+include_once '../classes/Booking.php';
 
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['error_message'] = "Please log in before booking a service.";
-    header("Location: login.php");
+    header("Location: /login.php");
     exit;
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $user_id = $_SESSION['user_id'];
-    $service_type = $_POST['service_type'];
-    $appointment_date = $_POST['appointment_date'];
-    $appointment_time = $_POST['appointment_time'];
+    $service_type = trim($_POST['service_type']);
+    $appointment_date = trim($_POST['appointment_date']);
+    $appointment_time = trim($_POST['appointment_time']);
 
     if (empty($service_type) || empty($appointment_date) || empty($appointment_time)) {
-        $_SESSION['error_message'] = "Please fill in all the required fields.";
+        $_SESSION['error_message'] = "Please fill in all required fields.";
         header("Location: booking.php");
         exit;
     }
 
-    $sql = "INSERT INTO bookings (user_id, service_type, appointment_date, appointment_time) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
+    $booking = new Booking($conn);
 
-    if (!$stmt) {
-        $_SESSION['error_message'] = "Database error: " . $conn->error;
-        header("Location: booking.php");
-        exit;
-    }
-
-    $stmt->bind_param("isss", $user_id, $service_type, $appointment_date, $appointment_time);
-
-    if ($stmt->execute()) {
+    if ($booking->create($user_id, $service_type, $appointment_date, $appointment_time)) {
         $_SESSION['success_message'] = "Booking successful!";
-        header("Location: booking.php");
     } else {
-        $_SESSION['error_message'] = "Something went wrong. Please try again.";
-        header("Location: booking.php");
+        $_SESSION['error_message'] = "Something went wrong while saving your booking.";
     }
 
-    $stmt->close();
-    $conn->close();
+    header("Location: booking.php");
+    exit;
 }

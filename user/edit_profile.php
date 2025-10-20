@@ -1,6 +1,7 @@
 <?php
 session_start();
 include '../config/config.php';
+include '../classes/User.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
@@ -8,12 +9,9 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
+$user = new User($conn);
 
-$stmt = $conn->prepare("SELECT name, email, phone FROM users WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+$userData = $user->getUserById($user_id);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
@@ -21,9 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = trim($_POST['phone']);
 
     if ($name && $email && $phone) {
-        $update = $conn->prepare("UPDATE users SET name = ?, email = ?, phone = ? WHERE user_id = ?");
-        $update->bind_param("sssi", $name, $email, $phone, $user_id);
-        if ($update->execute()) {
+        if ($user->updateProfile($user_id, $name, $email, $phone)) {
             $_SESSION['profile_updated'] = true;
             $_SESSION['name'] = $name;
             header("Location: profile.php");
@@ -45,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
     <link rel="stylesheet" href="../assets/style.css">
-    <link rel="stylesheet" href="../assets/edit_profile.css">
+    <link rel="stylesheet" href="../assets/user/edit_profile.css">
     <link rel="stylesheet" href="../assets/css/all.min.css">
 </head>
 
@@ -63,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <header class="header">
         <div class="logo">Car Wash</div>
         <ul class="nav-links">
-            <li><a href="index.php#home" class="nav-link active">Home</a></li>
+            <li><a href="index.php#home" class="nav-link">Home</a></li>
             <li><a href="index.php#services" class="nav-link">Services</a></li>
             <li><a href="booking.php" class="nav-link">Book Now</a></li>
             <li><a href="my_bookings.php" class="nav-link">My Bookings</a></li>
@@ -85,17 +81,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form method="POST">
             <label for="name">Full Name</label>
-            <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>" required>
+            <input type="text" name="name" value="<?= htmlspecialchars($userData['name']) ?>" required>
 
             <label for="email">Email</label>
-            <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
+            <input type="email" name="email" value="<?= htmlspecialchars($userData['email']) ?>" required>
 
             <label for="phone">Phone</label>
-            <input type="text" name="phone" value="<?= htmlspecialchars($user['phone']) ?>" required>
+            <input type="text" name="phone" value="<?= htmlspecialchars($userData['phone']) ?>" required>
 
             <button type="submit" class="btn"><i class="fas fa-save"></i> Save Changes</button>
 
-            <a href="profile.php" class="btn back-btn"><i class="fas fa-arrow-left"></i> Back to Profile</a>
+            <a href="settings.php" class="btn back-btn"><i class="fas fa-arrow-left"></i> Back to Settings</a>
         </form>
     </div>
     <script src="../assets/script.js"></script>

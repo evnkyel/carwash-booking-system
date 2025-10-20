@@ -100,15 +100,18 @@ if (isset($_SESSION['success_message'])) {
             <form action="signup_process.php" method="POST">
                 <div class="form-group long">
                     <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name"
+                        value="<?php echo isset($_SESSION['form_data']['name']) ? htmlspecialchars($_SESSION['form_data']['name']) : ''; ?>" required>
                 </div>
                 <div class="form-group short">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    <input type="email" id="email" name="email" placeholder="Enter your email"
+                        value="<?php echo isset($_SESSION['form_data']['email']) ? htmlspecialchars($_SESSION['form_data']['email']) : ''; ?>" required>
                 </div>
                 <div class="form-group short">
                     <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number"
+                        value="<?php echo isset($_SESSION['form_data']['phone']) ? htmlspecialchars($_SESSION['form_data']['phone']) : ''; ?>" required>
                 </div>
                 <div class="form-group long">
                     <label for="password">Password</label>
@@ -125,6 +128,7 @@ if (isset($_SESSION['success_message'])) {
                 </div>
                 <button type="submit" class="btn-primary">Sign Up</button>
             </form>
+
             <div class="signup-link">
                 <p>Already have an account? <a href="login.php">Sign In</a></p>
             </div>
@@ -135,3 +139,4 @@ if (isset($_SESSION['success_message'])) {
 </body>
 
 </html>
+<?php unset($_SESSION['form_data']); ?>

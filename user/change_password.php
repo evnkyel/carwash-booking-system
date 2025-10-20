@@ -1,6 +1,7 @@
 <?php
 session_start();
 include '../config/config.php';
+include '../classes/User.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
@@ -8,20 +9,14 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
+$user = new User($conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $current_password = $_POST['current_password'];
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
 
-    $stmt = $conn->prepare("SELECT password FROM users WHERE user_id = ?");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $stmt->bind_result($hashed_password);
-    $stmt->fetch();
-    $stmt->close();
-
-    if (!password_verify($current_password, $hashed_password)) {
+    if (!$user->verifyPassword($user_id, $current_password)) {
         $_SESSION['toast_type'] = 'error';
         $_SESSION['toast_message'] = 'Current password is incorrect.';
     } elseif ($new_password !== $confirm_password) {
@@ -31,10 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['toast_type'] = 'error';
         $_SESSION['toast_message'] = 'Password must be at least 6 characters long.';
     } else {
-        $new_hashed = password_hash($new_password, PASSWORD_DEFAULT);
-        $update = $conn->prepare("UPDATE users SET password = ? WHERE user_id = ?");
-        $update->bind_param("si", $new_hashed, $user_id);
-        if ($update->execute()) {
+        if ($user->updatePassword($user_id, $new_password)) {
             $_SESSION['toast_type'] = 'success';
             $_SESSION['toast_message'] = 'Password changed successfully!';
         } else {
@@ -48,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Change Password</title>
     <link rel="stylesheet" href="../assets/style.css">
-    <link rel="stylesheet" href="../assets/change_password.css">
+    <link rel="stylesheet" href="../assets/user/change_password.css">
     <link rel="stylesheet" href="../assets/css/all.min.css">
     <link rel="stylesheet" href="../assets/toastify.css">
 </head>
@@ -75,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <header class="header">
         <div class="logo">Car Wash</div>
         <ul class="nav-links">
-            <li><a href="index.php#home" class="nav-link active">Home</a></li>
+            <li><a href="index.php#home" class="nav-link">Home</a></li>
             <li><a href="index.php#services" class="nav-link">Services</a></li>
             <li><a href="booking.php" class="nav-link">Book Now</a></li>
             <li><a href="my_bookings.php" class="nav-link">My Bookings</a></li>
@@ -111,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <button type="submit" class="btn"><i class="fas fa-key"></i> Change Password</button>
 
-            <a href="profile.php" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Profile</a>
+            <a href="settings.php" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Settings</a>
         </form>
     </div>
 

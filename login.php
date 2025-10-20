@@ -23,6 +23,29 @@ if (isset($_SESSION['error_message'])) {
     ";
     unset($_SESSION['error_message']);
 }
+
+if (isset($_SESSION['success_message'])) {
+    echo "
+    <script>
+    window.addEventListener('DOMContentLoaded', () => {
+        Toastify({
+            text: '" . addslashes($_SESSION['success_message']) . "',
+            duration: 3000,
+            gravity: 'top',
+            position: 'center',
+            close: true,
+            style: {
+                background: 'linear-gradient(to right, #00b09b, #96c93d)',
+                borderRadius: '12px',
+                fontSize: '16px',
+                textAlign: 'center'
+            }
+        }).showToast();
+    });
+    </script>
+    ";
+    unset($_SESSION['success_message']);
+}
 ?>
 
 
@@ -70,7 +93,15 @@ if (isset($_SESSION['error_message'])) {
             <form action="login_process.php" method="POST">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="text" id="email" name="email" placeholder="Enter your email" required>
+                    <input type="email" id="email" name="email" placeholder="Enter your email"
+                        value="<?php
+                                if (isset($_SESSION['login_form_data']['email'])) {
+                                    echo htmlspecialchars($_SESSION['login_form_data']['email']);
+                                } elseif (isset($_COOKIE['remember_email'])) {
+                                    echo htmlspecialchars($_COOKIE['remember_email']);
+                                }
+                                ?>"
+                        required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
@@ -78,7 +109,8 @@ if (isset($_SESSION['error_message'])) {
                 </div>
                 <div class="form-options">
                     <label class="remember-me">
-                        <input type="checkbox" name="remember"> Remember me
+                        <input type="checkbox" name="remember"
+                            <?php echo isset($_COOKIE['remember_email']) ? 'checked' : ''; ?>> Remember me
                     </label>
                     <a href="#forgot-password" class="forgot-password">Forgot Password?</a>
                 </div>
@@ -94,3 +126,4 @@ if (isset($_SESSION['error_message'])) {
 </body>
 
 </html>
+<?php unset($_SESSION['login_form_data']); ?>

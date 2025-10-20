@@ -1,6 +1,7 @@
 <?php
 session_start();
 include '../config/config.php';
+include '../classes/User.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
@@ -9,16 +10,12 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-$stmt = $conn->prepare("SELECT name, email, phone FROM users WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
+$userClass = new User($conn);
+$user = $userClass->getUserById($user_id);
 
-if ($result->num_rows == 0) {
+if (!$user) {
     die("User not found!");
 }
-
-$user = $result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +28,8 @@ $user = $result->fetch_assoc();
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="stylesheet" href="../assets/css/all.min.css">
     <link rel="stylesheet" href="../assets/toastify.css">
-    <link rel="stylesheet" href="../assets/profile.css">
+    <link rel="stylesheet" href="../assets/user/profile.css">
+    <link id="themeStylesheet" rel="stylesheet" href="">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -46,7 +44,7 @@ $user = $result->fetch_assoc();
 
     <nav class="profile-menu">
         <ul class="profile-list">
-            <li><a href="profile.php"><i class="fas fa-user-circle nav-icon"></i> My Profile</a></li>
+            <li><a href="profile.php" class="active"><i class="fas fa-user-circle nav-icon"></i> My Profile</a></li>
             <li><a href="settings.php"><i class="fas fa-cog nav-icon"></i> Settings</a></li>
             <li><a href="../logout.php" id="logout-btn"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a></li>
         </ul>
@@ -78,44 +76,39 @@ $user = $result->fetch_assoc();
             </div>
 
             <div class="btn-container">
-                <button class="btn" onclick="window.location.href='edit_profile.php'">
-                    <i class="fas fa-edit"></i> Edit Profile
+                <button class="btn" onclick="window.location.href='settings.php'">
+                    <i class="fas fa-cog"></i> Manage Account
                 </button>
-                <button class="btn btn-secondary" onclick="window.location.href='change_password.php'">
-                    <i class="fas fa-key"></i> Change Password
-                </button>
+
             </div>
         </div>
     </section>
 
     <script src="../assets/toastify.js"></script>
     <script src="../assets/script.js"></script>
+    <script src="../assets/theme.js"></script>
 
 
-    <?php
-    if (isset($_SESSION['profile_updated']) && $_SESSION['profile_updated'] === true) {
-        echo "
+    <?php if (isset($_SESSION['profile_updated']) && $_SESSION['profile_updated'] === true): ?>
         <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            Toastify({
-                text: 'Profile updated successfully!',
-                duration: 3000,
-                gravity: 'top',
-                position: 'center',
-                close: true,
-                style: {
-                    background: 'linear-gradient(to right, #00b09b, #96c93d)',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    textAlign: 'center'
-                }
-            }).showToast();
-        });
+            window.addEventListener('DOMContentLoaded', () => {
+                Toastify({
+                    text: 'Profile updated successfully!',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'center',
+                    close: true,
+                    style: {
+                        background: 'linear-gradient(to right, #00b09b, #96c93d)',
+                        borderRadius: '12px',
+                        fontSize: '16px',
+                        textAlign: 'center'
+                    }
+                }).showToast();
+            });
         </script>
-        ";
-        unset($_SESSION['profile_updated']);
-    }
-    ?>
+        <?php unset($_SESSION['profile_updated']); ?>
+    <?php endif; ?>
 </body>
 
 </html>
